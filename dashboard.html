@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            margin: 0;
+            min-height: 100vh;
+        }
+        .dashboard-container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(40, 40, 80, 0.18);
+            padding: 32px;
+            position: relative;
+        }
+        h1 {
+            color: #2575fc;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+        .section-card {
+            background: #f7f9fa;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(40, 40, 80, 0.08);
+            padding: 24px;
+            text-align: center;
+            transition: box-shadow 0.2s;
+            position: relative;
+        }
+        .section-card:hover {
+            box-shadow: 0 4px 16px rgba(40, 40, 80, 0.15);
+        }
+        .section-title {
+            color: #6a11cb;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .section-desc {
+            color: #444;
+            font-size: 15px;
+        }
+        input, button, textarea, select {
+            font-family: inherit;
+        }
+        .profile-icon {
+            position: absolute;
+            top: 24px;
+            right: 32px;
+            width: 44px;
+            height: 44px;
+            background: #2575fc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(40, 40, 80, 0.10);
+            transition: background 0.2s;
+        }
+        .profile-icon:hover {
+            background: #6a11cb;
+        }
+        .profile-icon span {
+            font-size: 28px;
+            color: #fff;
+        }
+        .profile-modal {
+            display: none;
+            position: fixed;
+            top: 70px;
+            right: 50px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 8px 32px rgba(40, 40, 80, 0.18);
+            padding: 28px 32px 24px 32px;
+            z-index: 1000;
+            min-width: 320px;
+        }
+        .profile-modal h2 {
+            color: #2575fc;
+            margin-top: 0;
+            margin-bottom: 18px;
+            font-size: 22px;
+            text-align: left;
+        }
+        .profile-modal .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 18px;
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #2575fc;
+            cursor: pointer;
+        }
+        .profile-modal ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .profile-modal ul li {
+            margin-bottom: 12px;
+            font-size: 16px;
+            color: #333;
+        }
+        #career-progress-form-container form {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        #career-progress-form-container label {
+            display: block;
+            margin: 8px 0 4px;
+        }
+        #career-progress-form-container input,
+        #career-progress-form-container textarea,
+        #career-progress-form-container select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #career-progress-form-container button {
+            background: #2575fc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #career-progress-form-container button:hover {
+            background: #6a11cb;
+        }
+        .program-list {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+        }
+        .program-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        .program-item:last-child {
+            border-bottom: none;
+        }
+        #search-alumni-container h2 {
+            padding:20px 0 10px 0;
+            margin-bottom:10px;
+            text-align:center;
+            background:#004080;
+            color:white;
+            border-radius:8px;
+        }
+        #search-alumni-container .filter-container {
+            max-width:800px;
+            margin:auto;
+            margin-bottom:15px;
+            text-align:center;
+        }
+        #search-alumni-container select {
+            padding:10px;
+            border:2px solid #007bff;
+            border-radius:8px;
+            font-size:16px;
+            background:white;
+            cursor:pointer;
+            width:200px;
+        }
+        #search-alumni-container .search-container {
+            max-width:800px;
+            margin:auto;
+            position:relative;
+        }
+        #search-alumni-container input[type="text"] {
+            width:100%;
+            padding:12px;
+            border:2px solid #007bff;
+            border-radius:8px;
+            font-size:16px;
+        }
+        #search-alumni-container .suggestions {
+            background:#fff;
+            border:1px solid #ddd;
+            border-radius:8px;
+            margin-top:5px;
+            position:absolute;
+            width:100%;
+            max-height:200px;
+            overflow-y:auto;
+            box-shadow:0 2px 8px rgba(0,0,0,0.1);
+            z-index:10;
+        }
+        #search-alumni-container .suggestions div {
+            padding:10px;
+            cursor:pointer;
+            transition:0.2s;
+        }
+        #search-alumni-container .suggestions div:hover {
+            background:#e9f2ff;
+        }
+        /* Donation styles */
+        .donation-form, .donation-table {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 8px;
+            max-width: 600px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .donation-form label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+        .donation-form input, .donation-form select, .donation-form button {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .donation-form button {
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .donation-form button:hover {
+            background: #45a049;
+        }
+        .donation-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .donation-table th, .donation-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        .donation-table th {
+            background: #4CAF50;
+            color: white;
+        }
+        .donation-table .total {
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Profile Icon -->
+        <div class="profile-icon" id="profileIcon" title="View Profile">
+            <span>👤</span>
+        </div>
+        <!-- Profile Modal -->
+        <div class="profile-modal" id="profileModal">
+            <button class="close-btn" id="closeProfileModal" title="Close">&times;</button>
+            <h2>Your Profile</h2>
+            <ul id="profileDetails">
+                <!-- Profile details will be injected here -->
+            </ul>
+        </div>
+        <h1>Welcome to Your Dashboard</h1>
+        <div class="sections">
+            <!-- Chat Interface Section -->
+            <div class="section-card" id="chat-section" style="cursor:pointer;">
+                <div class="section-title">Chat Interface</div>
+                <div class="section-desc">Connect and chat with other alumni in real-time.</div>
+                <div id="alumni-list" style="display:none; margin-top:18px;">
+                    <!-- Alumni list will be rendered here -->
+                </div>
+            </div>
+            <!-- Events Section -->
+            <div class="section-card" id="event-section" style="cursor:pointer;">
+                <div class="section-title">Events</div>
+                <div class="section-desc">View and register for upcoming alumni events.</div>
+                <div id="event-list" style="display:none; margin-top:18px;">
+                    <div style="background:#eef3fa; border-radius:8px; padding:14px; margin-bottom:12px; text-align:left;">
+                        <strong>Skill Building Workshops</strong><br>
+                        <span>Date: 25th September 2025</span><br>
+                        <button onclick="alert('You have registered for Skill Building Workshops!')"
+                            style="margin-top:8px; background:#2575fc; color:#fff; border:none; border-radius:5px; padding:6px 16px; cursor:pointer;">
+                            Participate
+                        </button>
+                    </div>
+                    <div style="background:#eef3fa; border-radius:8px; padding:14px; margin-bottom:12px; text-align:left;">
+                        <strong>Panel Discussions - On Industry Trends</strong><br>
+                        <span>Date: 30th September 2025</span><br>
+                        <button onclick="alert('You have registered for Panel Discussions!')"
+                            style="margin-top:8px; background:#2575fc; color:#fff; border:none; border-radius:5px; padding:6px 16px; cursor:pointer;">
+                            Participate
+                        </button>
+                    </div>
+                    <div style="background:#eef3fa; border-radius:8px; padding:14px; margin-bottom:12px; text-align:left;">
+                        <strong>Alumni Meet</strong><br>
+                        <span>Date: 5th October 2025</span><br>
+                        <button onclick="alert('You have registered for Alumni Meet!')"
+                            style="margin-top:8px; background:#2575fc; color:#fff; border:none; border-radius:5px; padding:6px 16px; cursor:pointer;">
+                            Participate
+                        </button>
+                    </div>
+                    <div style="background:#eef3fa; border-radius:8px; padding:14px; margin-bottom:12px; text-align:left;">
+                        <strong>Hackathon/Ideathon</strong><br>
+                        <span>Date: 12th October 2025</span><br>
+                        <button onclick="alert('You have registered for Hackathon/Ideathon!')"
+                            style="margin-top:8px; background:#2575fc; color:#fff; border:none; border-radius:5px; padding:6px 16px; cursor:pointer;">
+                            Participate
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Edit Profile Section -->
+            <div class="section-card" id="edit-profile-section">
+                <div class="section-title" style="cursor:pointer;">Edit Profile</div>
+                <div class="section-desc" style="cursor:pointer;">Update your personal and professional information.</div>
+                <div id="edit-profile-form" style="display:none; margin-top:18px; text-align:left;">
+                    <form id="profileForm">
+                        <label>Name:</label><br>
+                        <input type="text" id="profileName" style="width:100%;margin-bottom:10px;" required><br>
+                        <label>University Name:</label><br>
+                        <input type="text" id="profileUniversity" style="width:100%;margin-bottom:10px;" required value="Central University"><br>
+                        <label>Age:</label><br>
+                        <input type="number" id="profileAge" style="width:100%;margin-bottom:10px;" required><br>
+                        <label>Course:</label><br>
+                        <input type="text" id="profileCourse" style="width:100%;margin-bottom:10px;" required><br>
+                        <label>Gmail ID:</label><br>
+                        <input type="email" id="profileGmail" style="width:100%;margin-bottom:10px;" required><br>
+                        <label>Phone Number:</label><br>
+                        <input type="tel" id="profilePhone" style="width:100%;margin-bottom:10px;" required><br>
+                        <label>Current Occupation:</label><br>
+                        <input type="text" id="profileOccupation" style="width:100%;margin-bottom:10px;" required><br>
+                        <label>LinkedIn Profile:</label><br>
+                        <input type="url" id="profileLinkedIn" style="width:100%;margin-bottom:10px;"><br>
+                        <button type="submit" style="background:#2575fc; color:#fff; border:none; border-radius:5px; padding:8px 20px; cursor:pointer;">Save</button>
+                    </form>
+                </div>
+            </div>
+            <!-- Add Career Progress Section -->
+            <div class="section-card" id="career-progress-section">
+                <div class="section-title" style="cursor:pointer;">Add Career Progress</div>
+                <div class="section-desc" style="cursor:pointer;">Share your career milestones and achievements.</div>
+                <div id="career-progress-form-container" style="display:none; margin-top:18px;">
+                    <form id="programForm">
+                        <label for="title">Program Title:</label>
+                        <input type="text" id="title" name="title" required>
+                        <label for="type">Program Type:</label>
+                        <select id="type" name="type" required>
+                            <option value="">-- Select Type --</option>
+                            <option value="Workshop">Workshop</option>
+                            <option value="Internship">Internship</option>
+                            <option value="Job Opportunity">Job Opportunity</option>
+                            <option value="Training">Training</option>
+                        </select>
+                        <label for="description">Description:</label>
+                        <textarea id="description" name="description" placeholder="Brief details about the candidate..." rows="5" required></textarea>
+                        <label for="date">Date:</label>
+                        <input type="date" id="date" name="date" required>
+                        <label for="addedBy">Added by:</label>
+                        <input type="text" id="addedBy" name="addedBy" required>
+                        <label for="cert-desc">Certificate Description:</label>
+                        <textarea id="cert-desc" name="cert-desc" placeholder="Brief details about the certificate..." rows="4" required></textarea>
+                        <label for="cert-file">Upload Certificate:</label>
+                        <input type="file" id="cert-file" name="cert-file" accept=".pdf,.jpg,.jpeg,.png">
+                        <label for="career-progress">Add Career Progress:</label>
+                        <textarea id="career-progress" name="career-progress" placeholder="Brief details about career progress..." rows="5" required></textarea>
+                        <button type="submit" style="background:#2575fc; color:#fff; border:none; border-radius:5px; padding:8px 20px; cursor:pointer;">Add Program</button>
+                    </form>
+                    <div class="program-list" style="margin-top:24px;">
+                        <h2>AVAILABLE PROGRAMS</h2>
+                        <p>The added programs will be displayed here:</p>
+                        <div id="programs"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Search Other Alumni Section -->
+            <div class="section-card" id="search-alumni-section">
+                <div class="section-title" style="cursor:pointer;">Search Other Alumni</div>
+                <div class="section-desc" style="cursor:pointer;">Find and connect with fellow alumni.</div>
+                <div id="search-alumni-container" style="display:none; margin-top:18px;">
+                    <h2>🔍 SEARCH ALUMNI</h2>
+                    <div class="filter-container">
+                        <label for="filter"><strong>SEARCH FILTER:</strong> </label>
+                        <select id="filter">
+                            <option value="">-- Search filter--</option>
+                            <option value="name">Name</option>
+                            <option value="batch">Batch</option>
+                            <option value="course">Course</option>
+                            <option value="profession">Profession</option>
+                        </select>
+                    </div>
+                    <div class="search-container">
+                        <label for="searchInput"><strong>SEARCH BAR:</strong> </label>
+                        <input type="text" id="searchInput" placeholder="Type to search...">
+                        <div class="suggestions" id="suggestions"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Track Donations Section (MODIFIED) -->
+            <div class="section-card" id="donation-section">
+                <div class="section-title" style="cursor:pointer;">Track Donations</div>
+                <div class="section-desc" style="cursor:pointer;">Monitor your contributions and donations.</div>
+                <div id="donation-container" style="display:none; margin-top:18px; text-align:left;">
+                    <h2 style="background:#004080; color:white; padding:20px; border-radius:8px; text-align:center; margin-bottom:10px;">🎓 ALUMNI DONATION TRACKER</h2>
+                    <div class="donation-form">
+                        <h3>MAKE A DONATION:</h3>
+                        <form id="donationForm">
+                            <label for="donorName">Donor Name:</label>
+                            <input type="text" id="donorName" required>
+                            <label for="donationAmount">Donation Amount (₹):</label>
+                            <input type="number" id="donationAmount" min="1" required>
+                            <label for="donationPurpose">Purpose:</label>
+                            <select id="donationPurpose" required>
+                                <option value="Scholarship">Scholarship</option>
+                                <option value="Infrastructure">Infrastructure</option>
+                                <option value="Events">Events</option>
+                                <option value="General Fund">General Fund</option>
+                                <option value="Research">Research</option>
+                                <option value="Health care & wellness">Health care & wellness</option>
+                                <option value="Faculty development">Faculty development</option>
+                                <option value="Other reasons">Other reasons</option>
+                            </select>
+                            <button type="submit">Add Donation</button>
+                        </form>
+                    </div>
+                    <div class="donation-table">
+                        <h3>Donation Records</h3>
+                        <table id="donationTable">
+                            <thead>
+                                <tr>
+                                    <th>Donor Name</th>
+                                    <th>Amount (₹)</th>
+                                    <th>Purpose</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Donations will appear here -->
+                            </tbody>
+                        </table>
+                        <p class="total" id="totalAmount">Total Donations: ₹0</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Mentorship Opportunities Section -->
+            <div class="section-card" id="mentorship-section">
+                <div class="section-title" style="cursor:pointer;">Mentorship Opportunities</div>
+                <div class="section-desc" style="cursor:pointer;">Explore and enroll in national-level mentorship programs offered by experienced alumni.</div>
+                <div id="mentorship-list" style="display:none; margin-top:18px; text-align:left;">
+                    <h2 style="color:#2575fc; margin-bottom:18px;">Upcoming Mentorship Programs</h2>
+                    <div style="background:#eef3fa; border-radius:8px; padding:16px; margin-bottom:16px;">
+                        <strong>Mentor:</strong> Dr. Priya Mehra<br>
+                        <strong>Qualification:</strong> PhD, Data Science<br>
+                        <strong>Batch:</strong> 2012<br>
+                        <strong>Topic:</strong> AI & Machine Learning Career Guidance<br>
+                        <strong>Date & Time:</strong> 28th September 2025, 5:00 PM<br>
+                        <button onclick="alert('You have enrolled for AI & Machine Learning Career Guidance!')"
+                            style="margin-top:10px; background:#2575fc; color:#fff; border:none; border-radius:5px; padding:8px 20px; cursor:pointer;">
+                            Enroll
+                        </button>
+                    </div>
+                    <div style="background:#eef3fa; border-radius:8px; padding:16px; margin-bottom:16px;">
+                        <strong>Mentor:</strong> Mr. Rahul Singh<br>
+                        <strong>Qualification:</strong> MBA, Marketing<br>
+                        <strong>Batch:</strong> 2015<br>
+                        <strong>Topic:</strong> Building a Career in Marketing & Sales<br>
+                        <strong>Date & Time:</strong> 2nd October 2025, 4:00 PM<br>
+                        <button onclick="alert('You have enrolled for Building a Career in Marketing & Sales!')"
+                            style="margin-top:10px; background:#2575fc; color:#fff; border:none; border-radius:5px; padding:8px 20px; cursor:pointer;">
+                            Enroll
+                        </button>
+                    </div>
+                    <div style="background:#eef3fa; border-radius:8px; padding:16px; margin-bottom:16px;">
+                        <strong>Mentor:</strong> Ms. Sneha Patel<br>
+                        <strong>Qualification:</strong> M.Sc Biotechnology<br>
+                        <strong>Batch:</strong> 2016<br>
+                        <strong>Topic:</strong> Research & Innovation in Life Sciences<br>
+                        <strong>Date & Time:</strong> 6th October 2025, 6:30 PM<br>
+                        <button onclick="alert('You have enrolled for Research & Innovation in Life Sciences!')"
+                            style="margin-top:10px; background:#2575fc; color:#fff; border:none; border-radius:5px; padding:8px 20px; cursor:pointer;">
+                            Enroll
+                        </button>
+                    </div>
+                    <div style="background:#eef3fa; border-radius:8px; padding:16px; margin-bottom:16px;">
+                        <strong>Mentor:</strong> Prof. Arjun Singh<br>
+                        <strong>Qualification:</strong> MA, History<br>
+                        <strong>Batch:</strong> 2010<br>
+                        <strong>Topic:</strong> Higher Studies & Research Abroad<br>
+                        <strong>Date & Time:</strong> 10th October 2025, 3:00 PM<br>
+                        <button onclick="alert('You have enrolled for Higher Studies & Research Abroad!')"
+                            style="margin-top:10px; background:#2575fc; color:#fff; border:none; border-radius:5px; padding:8px 20px; cursor:pointer;">
+                            Enroll
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Profile Data (simulate user data, can be replaced with backend data)
+        let userProfile = {
+            name: "Your Name",
+            university: "Central University",
+            age: "21",
+            course: "B.Tech Computer Science",
+            gmail: "yourmail@university.edu",
+            phone: "9876543210",
+            occupation: "Student",
+            linkedin: "https://linkedin.com/in/yourprofile"
+        };
+
+        // Profile Icon and Modal logic
+        const profileIcon = document.getElementById('profileIcon');
+        const profileModal = document.getElementById('profileModal');
+        const closeProfileModal = document.getElementById('closeProfileModal');
+        const profileDetails = document.getElementById('profileDetails');
+
+        function showProfileModal() {
+            profileDetails.innerHTML = `
+                <li><strong>Name:</strong> ${userProfile.name}</li>
+                <li><strong>University Name:</strong> ${userProfile.university}</li>
+                <li><strong>Age:</strong> ${userProfile.age}</li>
+                <li><strong>Course:</strong> ${userProfile.course}</li>
+                <li><strong>Gmail ID:</strong> ${userProfile.gmail}</li>
+                <li><strong>Phone Number:</strong> ${userProfile.phone}</li>
+                <li><strong>Current Occupation:</strong> ${userProfile.occupation}</li>
+                <li><strong>LinkedIn Profile:</strong> <a href="${userProfile.linkedin}" target="_blank">${userProfile.linkedin}</a></li>
+            `;
+            profileModal.style.display = 'block';
+        }
+        profileIcon.addEventListener('click', showProfileModal);
+        closeProfileModal.addEventListener('click', function() {
+            profileModal.style.display = 'none';
+        });
+        window.addEventListener('click', function(e) {
+            if (e.target === profileModal) {
+                profileModal.style.display = 'none';
+            }
+        });
+
+        // Chat Alumni Data
+        const chatAlumni = [
+            { name: "Priya Sharma", batch: "2022", job: "Software Engineer at Infosys" },
+            { name: "Rahul Verma", batch: "2021", job: "Marketing Manager at HDFC Bank" },
+            { name: "Sneha Patel", batch: "2020", job: "Research Associate at Biocon" },
+            { name: "Arjun Singh", batch: "2019", job: "Lecturer at Delhi University" }
+        ];
+
+        function renderAlumniList() {
+            const alumniList = document.getElementById('alumni-list');
+            alumniList.innerHTML = '';
+            chatAlumni.forEach(alum => {
+                const div = document.createElement('div');
+                div.style.background = '#eef3fa';
+                div.style.borderRadius = '8px';
+                div.style.padding = '14px';
+                div.style.marginBottom = '12px';
+                div.style.textAlign = 'left';
+                div.innerHTML = `
+                    <strong>${alum.name}</strong><br>
+                    <span>Batch: ${alum.batch}</span><br>
+                    <span>Current Job: ${alum.job}</span><br>
+                    <button class="chat-request-btn"
+                        style="margin-top:8px; background:#2575fc; color:#fff; border:none; border-radius:5px; padding:6px 16px; cursor:pointer;"
+                        data-name="${alum.name}">
+                        Request Chat
+                    </button>
+                `;
+                alumniList.appendChild(div);
+            });
+        }
+
+        document.getElementById('chat-section').addEventListener('click', function(e) {
+            if (e.target.tagName === 'BUTTON') return;
+            var alumniList = document.getElementById('alumni-list');
+            if (alumniList.style.display === 'none') {
+                renderAlumniList();
+                alumniList.style.display = 'block';
+            } else {
+                alumniList.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('chat-request-btn')) {
+                const name = e.target.getAttribute('data-name');
+                alert(name + " chat request sent");
+            }
+        });
+
+        document.getElementById('event-section').addEventListener('click', function(e) {
+            if (e.target.tagName === 'BUTTON') return;
+            var eventList = document.getElementById('event-list');
+            eventList.style.display = eventList.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.querySelectorAll('#edit-profile-section .section-title, #edit-profile-section .section-desc').forEach(function(el) {
+            el.addEventListener('click', function() {
+                var profileForm = document.getElementById('edit-profile-form');
+                profileForm.style.display = 'block';
+            });
+        });
+        document.getElementById('profileForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            userProfile.name = document.getElementById('profileName').value;
+            userProfile.university = document.getElementById('profileUniversity').value;
+            userProfile.age = document.getElementById('profileAge').value;
+            userProfile.course = document.getElementById('profileCourse').value;
+            userProfile.gmail = document.getElementById('profileGmail').value;
+            userProfile.phone = document.getElementById('profilePhone').value;
+            userProfile.occupation = document.getElementById('profileOccupation').value;
+            userProfile.linkedin = document.getElementById('profileLinkedIn').value;
+            alert("Profile successfully updated!");
+            document.getElementById('edit-profile-form').style.display = 'none';
+        });
+
+        document.querySelectorAll('#career-progress-section .section-title, #career-progress-section .section-desc').forEach(function(el) {
+            el.addEventListener('click', function() {
+                var container = document.getElementById('career-progress-form-container');
+                container.style.display = 'block';
+            });
+        });
+
+        const form = document.getElementById('programForm');
+        const programContainer = document.getElementById('programs');
+
+        form?.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('title').value;
+            const type = document.getElementById('type').value;
+            const description = document.getElementById('description').value;
+            const date = document.getElementById('date').value;
+            const addedBy = document.getElementById('addedBy').value;
+            const certDesc = document.getElementById('cert-desc').value;
+            const careerProgress = document.getElementById('career-progress').value;
+            const certFileInput = document.getElementById('cert-file');
+            let certFileName = '';
+            if (certFileInput.files.length > 0) {
+                certFileName = certFileInput.files[0].name;
+            }
+
+            const programItem = document.createElement('div');
+            programItem.classList.add('program-item');
+            programItem.innerHTML = `
+                <h3>${title} (${type})</h3>
+                <p><strong>Date:</strong> ${date}</p>
+                <p><strong>Added by:</strong> ${addedBy}</p>
+                <p><strong>Description:</strong> ${description}</p>
+                <p><strong>Certificate:</strong> ${certDesc}${certFileName ? ' (' + certFileName + ')' : ''}</p>
+                <p><strong>Career Progress:</strong> ${careerProgress}</p>
+            `;
+
+            programContainer.appendChild(programItem);
+
+            form.reset();
+        });
+
+        document.querySelectorAll('#search-alumni-section .section-title, #search-alumni-section .section-desc').forEach(function(el) {
+            el.addEventListener('click', function() {
+                var container = document.getElementById('search-alumni-container');
+                container.style.display = 'block';
+            });
+        });
+
+        const alumni = [
+            { name: "Arjun Kumar", batch: "2020", course: "Computer Science", profession: "Software developer" },
+            { name: "Ayesha Begum", batch: "2019", course: "Electronics", profession: "Technical consultant" },
+            { name: "Rahul Sharma", batch: "2021", course: "Mechanical", profession: "Design engineer" },
+            { name: "Meena Devi", batch: "2020", course: "Civil Engineering", profession: "Site engineer" },
+            { name: "Vikram Singh", batch: "2018", course: "Information Technology", profession: "Web developer" },
+            { name: "Sanjana Rao", batch: "2021", course: "Computer Science", profession: "Network engineer" },
+            { name: "Farhan Ali", batch: "2019", course: "Mechanical", profession: "Manufacturing engineer" }
+        ];
+
+        const searchInput = document.getElementById("searchInput");
+        const filter = document.getElementById("filter");
+        const suggestions = document.getElementById("suggestions");
+
+        if (searchInput && filter && suggestions) {
+            searchInput.addEventListener("input", function () {
+                let input = searchInput.value.toLowerCase();
+                let filterType = filter.value;
+                suggestions.innerHTML = "";
+
+                if (input && filterType) {
+                    let matches = alumni.filter(alum =>
+                        alum[filterType].toLowerCase().includes(input)
+                    );
+
+                    matches.forEach(match => {
+                        const div = document.createElement("div");
+                        div.textContent = `${match.name} - ${match.course} (Batch ${match.batch}) - ${match.profession}`;
+                        div.onclick = () => {
+                            searchInput.value = match[filterType];
+                            suggestions.innerHTML = "";
+                        };
+                        suggestions.appendChild(div);
+                    });
+
+                    if (matches.length === 0) {
+                        const div = document.createElement("div");
+                        div.textContent = "No results found";
+                        suggestions.appendChild(div);
+                    }
+                }
+            });
+
+            document.addEventListener("click", function(e) {
+                if (!searchInput.contains(e.target) && !suggestions.contains(e.target)) {
+                    suggestions.innerHTML = "";
+                }
+            });
+        }
+
+        document.querySelectorAll('#mentorship-section .section-title, #mentorship-section .section-desc').forEach(function(el) {
+            el.addEventListener('click', function() {
+                var mentorshipList = document.getElementById('mentorship-list');
+                mentorshipList.style.display = 'block';
+            });
+        });
+
+        // Track Donations section toggle
+        document.querySelectorAll('#donation-section .section-title, #donation-section .section-desc').forEach(function(el) {
+            el.addEventListener('click', function() {
+                var donationContainer = document.getElementById('donation-container');
+                donationContainer.style.display = 'block';
+            });
+        });
+
+        // Donation Tracker Logic
+        const donationForm = document.getElementById('donationForm');
+        const donationTableBody = document.getElementById('donationTable').getElementsByTagName('tbody')[0];
+        const totalAmountElem = document.getElementById('totalAmount');
+        let donationTotal = 0;
+
+        if (donationForm) {
+            donationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const name = document.getElementById('donorName').value;
+                const amount = parseFloat(document.getElementById('donationAmount').value);
+                const purpose = document.getElementById('donationPurpose').value;
+
+                const newRow = donationTableBody.insertRow();
+                newRow.insertCell(0).textContent = name;
+                newRow.insertCell(1).textContent = "₹" + amount.toFixed(2);
+                newRow.insertCell(2).textContent = purpose;
+
+                donationTotal += amount;
+                totalAmountElem.textContent = "Total Donations: ₹" + donationTotal.toFixed(2);
+
+                donationForm.reset();
+            });
+        }
+    </script>
+</body>
+</html>
